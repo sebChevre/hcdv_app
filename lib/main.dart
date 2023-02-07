@@ -1,96 +1,67 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hcdv_app/enum/app-enum.dart';
 import 'package:hcdv_app/screen/coupe_screen.dart';
+import 'package:hcdv_app/screen/ligue1_playoff_out_screen.dart';
 import 'package:hcdv_app/screen/ligue1_screen.dart';
+import 'package:hcdv_app/screen/ranking.dart';
 import 'package:hcdv_app/screen/u13a_screen.dart';
 import 'package:hcdv_app/screen/u13top_screen.dart';
 import 'package:hcdv_app/screen/u15_screen.dart';
 import 'package:hcdv_app/screen/u17_screen.dart';
 import 'package:hcdv_app/screen/u20_screen.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  initializeDateFormatting("fr_CH");
+
+  await dotenv.load();
+
+  runApp(const HCDVApp());
+  CacheManager.logLevel = CacheManagerLogLevel.verbose;
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class HCDVApp extends StatelessWidget {
+  const HCDVApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'Navigation Example',
-      home: MyHomePage(),
+      title: 'HCDV - GameCenter',
+      home: HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage();
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  //int _typeMatchScreen = 0;
-  //int _leagueMatchScreen = 0;
-
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late TypeMatch _typeMatch;
+  late TypeStats _typeStats;
   late Ligue _ligue;
 
-  late TabController _typeStatsTopTabController;
+  late TabController _typeMatchsTopTabController;
   late TabController _leagueBottomTabController;
 
   @override
   void initState() {
     super.initState();
-
     _typeMatch = TypeMatch.championnat;
+    _typeStats = TypeStats.matchs;
     _ligue = Ligue.ligue1;
 
-    _typeStatsTopTabController =
+    _typeMatchsTopTabController =
         TabController(length: TypeStats.values.length, vsync: this);
     _leagueBottomTabController =
         TabController(length: Ligue.values.length, vsync: this);
-    /*
-    _leagueBottomTabController.addListener(() {
-      print('State change ${_ligue.label}');
-    });
-    */
-  }
-
-  bool isTypeMatchChampionnat(TypeMatch typeMatch) {
-    return typeMatch == TypeMatch.championnat;
-  }
-
-  Widget getLeaguePage(int index) {
-    switch (Ligue.values[index]) {
-      case Ligue.ligue1:
-        return Ligue1Page(TypeStats.values[_typeStatsTopTabController.index]);
-
-      case Ligue.u20:
-        return U20LiguePage(TypeStats.values[_typeStatsTopTabController.index]);
-
-      case Ligue.u17:
-        return U17LiguePage(TypeStats.values[_typeStatsTopTabController.index]);
-
-      case Ligue.u15:
-        return U15LiguePage(TypeStats.values[_typeStatsTopTabController.index]);
-
-      case Ligue.u13top:
-        return U13topLiguePage(
-            TypeStats.values[_typeStatsTopTabController.index]);
-
-      case Ligue.u13a:
-        return U13aLiguePage(
-            TypeStats.values[_typeStatsTopTabController.index]);
-
-      default:
-        return Center(
-          child: Text(
-              '${Ligue.values[index].label} - ${TypeStats.values[_typeStatsTopTabController.index].label} - ${_typeMatch.label}'),
-        );
-    }
   }
 
   @override
@@ -99,34 +70,140 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       home: Scaffold(
         /***** Main App Bar *****/
         appBar: AppBar(
-          title: const Text('HCDV - GameCenter'),
-          /*** Type Stats TabBar ***/
-          bottom: isTypeMatchChampionnat(_typeMatch)
-              ? TabBar(
-                  controller: _typeStatsTopTabController,
-                  /**  Tabs type de stats **/
-                  tabs: List<Widget>.generate(TypeStats.values.length, (index) {
-                    return Tab(
-                      height: 50,
-                      text: TypeStats.values[index].label,
-                      icon: const Icon(
-                        Icons.cloud_outlined,
-                        size: 10,
-                      ),
-                    );
-                  }),
+            toolbarHeight: 80,
+            backgroundColor: AppColor.main_red.color,
+            title: Row(
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      // ignore: prefer_const_literals_to_create_immutables
+                      children: [
+                        const Padding(padding: EdgeInsets.only(bottom: 10)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Image.asset(
+                          "hcdv_logo.png",
+                          height: 60,
+                        ),
+                        const Padding(padding: EdgeInsets.only(right: 30)),
+                        const Text(
+                          'HCDV - GameCenter',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
+                  ],
                 )
-              : PreferredSize(
-                  child: Container(), preferredSize: Size.fromHeight(0)),
-        ),
-        /***** League Bar *****/
+              ],
+            ),
+            /*** Type Stats TabBar ***/
+            bottom: TabBar(
+              indicatorColor: Colors.black,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.black,
+              controller: _typeMatchsTopTabController,
+              onTap: (index) {
+                print('TypeMatchs tap, index: ${index}');
+                setState(() {
+                  _typeMatch = TypeMatch.values[index];
+                });
+              },
+              /**  Tabs type de stats **/
+              tabs: List<Widget>.generate(_ligue.typesMatch.length, (index) {
+                return Tab(
+                  height: 65,
+                  text: TypeMatch.values[index].label,
+                  icon: Image.asset(TypeMatch.values[index].image,
+                      height: 35,
+                      color: _typeMatchsTopTabController.index == index
+                          ? Colors.white
+                          : Colors.black),
+                );
+              }),
+            )),
+
+        /***** League Bar - Barre de choix des leagues *****/
         body: TabBarView(
           controller: _leagueBottomTabController,
           children: List<Widget>.generate(Ligue.values.length, (int index) {
-            if (isTypeMatchChampionnat(_typeMatch)) {
-              getLeaguePage(index);
-            } else {
-              return const CoupePage();
+            if (_typeMatch == TypeMatch.coupe) {
+              return CoupePage();
+            }
+
+            //test sur la valeur de la ligue choisie
+            switch (Ligue.values[index]) {
+              case Ligue.ligue1:
+                if (_typeStats == TypeStats.classement) {
+                  return RankingScreen(Ligue.ligue1, _typeMatch);
+                } else if (_typeMatch == TypeMatch.championnat) {
+                  return Ligue1Page(_typeStats);
+                } else {
+                  return Ligue1PlayOffOutPage(_typeStats);
+                }
+
+              case Ligue.u20:
+                if (_typeStats == TypeStats.classement) {
+                  return _typeMatch == TypeMatch.championnat
+                      ? RankingScreen(Ligue.u20, _typeMatch)
+                      : noPlayOffCards();
+                } else if (_typeMatch == TypeMatch.championnat) {
+                  return U20LiguePage(_typeStats);
+                } else {
+                  return noPlayOffCards();
+                }
+
+              case Ligue.u17:
+                if (_typeStats == TypeStats.classement) {
+                  return _typeMatch == TypeMatch.championnat
+                      ? RankingScreen(Ligue.u17, _typeMatch)
+                      : noPlayOffCards();
+                } else if (_typeMatch == TypeMatch.championnat) {
+                  return U17LiguePage(_typeStats);
+                } else {
+                  return noPlayOffCards();
+                }
+
+              case Ligue.u15:
+                if (_typeStats == TypeStats.classement) {
+                  return _typeMatch == TypeMatch.championnat
+                      ? RankingScreen(Ligue.u15, _typeMatch)
+                      : noPlayOffCards();
+                } else if (_typeMatch == TypeMatch.championnat) {
+                  return U15LiguePage(_typeStats);
+                } else {
+                  return noPlayOffCards();
+                }
+
+              case Ligue.u13top:
+                if (_typeStats == TypeStats.classement) {
+                  return _typeMatch == TypeMatch.championnat
+                      ? noClassementCards()
+                      : noPlayOffCards();
+                } else if (_typeMatch == TypeMatch.championnat) {
+                  return U13TopLiguePage(_typeStats);
+                } else {
+                  return noPlayOffCards();
+                }
+
+              case Ligue.u13a:
+                if (_typeStats == TypeStats.classement) {
+                  return _typeMatch == TypeMatch.championnat
+                      ? noClassementCards()
+                      : noPlayOffCards();
+                } else if (_typeMatch == TypeMatch.championnat) {
+                  return U13ALiguePage(_typeStats);
+                } else {
+                  return noPlayOffCards();
+                }
+              default:
+                return Center(
+                  child: Text(
+                      '${Ligue.values[index].label} - ${_typeStats.label} - ${_typeMatch.label}'),
+                );
             }
           }),
         ),
@@ -135,36 +212,41 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Material(
-              color: Theme.of(context).primaryColor,
+              color: Colors.black,
               //*** League TabBar  ***/
-              child: isTypeMatchChampionnat(_typeMatch)
-                  ? TabBar(
-                      controller: _leagueBottomTabController,
-                      onTap: (index) {
-                        setState(() {
-                          _ligue = Ligue.values[index];
-                        });
-                      },
-                      isScrollable: true,
-                      tabs: List.generate(Ligue.values.length, (index) {
-                        return Tab(text: Ligue.values[index].label);
-                      }),
-                    )
-                  : Container(),
+              child: TabBar(
+                indicatorColor: Colors.black,
+                labelColor: Colors.white,
+                controller: _leagueBottomTabController,
+                onTap: (index) {
+                  setState(() {
+                    _ligue = Ligue.values[index];
+                    print(_ligue.label);
+                    print('League button click, index: ${index}');
+                  });
+                },
+                isScrollable: true,
+                tabs: List.generate(Ligue.values.length, (index) {
+                  return Tab(text: Ligue.values[index].label);
+                }),
+              ),
             ),
             /*** Cintainer vide pour choix coupe ***/
+
             BottomNavigationBar(
-              currentIndex: _typeMatch.index,
+              backgroundColor: AppColor.main_red.color,
+              selectedItemColor: Colors.white,
+              currentIndex: _typeStats.index,
               onTap: (int index) {
                 setState(() {
-                  _typeMatch = TypeMatch.values[index];
+                  _typeStats = TypeStats.values[index];
                 });
               },
               items: List<BottomNavigationBarItem>.generate(
-                  TypeMatch.values.length, (index) {
+                  TypeStats.values.length, (index) {
                 return BottomNavigationBarItem(
-                  icon: const Icon(Icons.airplanemode_active),
-                  label: TypeMatch.values[index].label,
+                  icon: TypeStats.values[index].icon,
+                  label: TypeStats.values[index].label,
                 );
               }),
             )
@@ -172,5 +254,32 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  Card noPlayOffCards() {
+    return const Card(
+        color: Color.fromARGB(255, 206, 39, 27),
+        child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Aucun playoffs prévus actuellement",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ))));
+  }
+
+  Card noClassementCards() {
+    return const Card(
+        color: Color.fromARGB(255, 206, 39, 27),
+        child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  textAlign: TextAlign.center,
+                  "Pas de classement pour cette catégorie de jeu",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ))));
   }
 }

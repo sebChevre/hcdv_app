@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hcdv_app/enum/app-enum.dart';
 import 'package:hcdv_app/widget/last_game_bloc.dart';
 import 'package:hcdv_app/widget/next_game_bloc.dart';
 import 'package:hcdv_app/widget/today_game_bloc.dart';
 
-import '../enum/app-enum.dart';
-import '../services/u15-service.dart';
-import '../services/u17-service.dart';
-import '../services/u20-service.dart';
+import '../services/l1-service.dart';
 import '../xml/xml_models.dart';
 
-class U15LiguePage extends StatelessWidget {
+class Ligue1PlayOffOutPage extends StatelessWidget {
   TypeStats typeStats;
 
-  U15LiguePage(this.typeStats, {super.key});
+  Ligue1PlayOffOutPage(this.typeStats, {super.key});
 
   Result resultFor(List<Result> resultats, String group) {
     return resultats.where((resultat) {
@@ -20,8 +18,9 @@ class U15LiguePage extends StatelessWidget {
     }).first;
   }
 
-  Future<List<Result>> _loadInitialU15Games() async {
-    List<Result> resultats = await U15Service().loadU15Games();
+  // Chargement de la liste des matchs
+  Future<List<Result>> _loadInitial1LGames() async {
+    List<Result> resultats = await L1Service().load1LPOGames();
 
     return resultats;
   }
@@ -29,7 +28,7 @@ class U15LiguePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _loadInitialU15Games(),
+        future: _loadInitial1LGames(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
@@ -56,7 +55,7 @@ class U15LiguePage extends StatelessWidget {
                                 padding: EdgeInsets.all(8),
                                 child: Text(
                                   '${resultFor(snapshot.requireData, "today").parameter.phaseNameF}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
@@ -73,7 +72,7 @@ class U15LiguePage extends StatelessWidget {
                           NextGameBloc(resultFor(snapshot.requireData, "next")),
                           const Padding(padding: EdgeInsets.only(top: 20)),
                           /** MATCH JOUES */
-                          LastGameBloc(resultFor(snapshot.requireData, "last")),
+                          LastGameBloc(resultFor(snapshot.requireData, "last"))
                         ],
                       )
                     : Column(),
