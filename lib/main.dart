@@ -264,6 +264,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: Align(
                 alignment: Alignment.center,
                 child: Text(
+                  textAlign: TextAlign.center,
                   "Aucun playoffs prévus actuellement",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ))));
