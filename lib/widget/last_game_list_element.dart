@@ -53,13 +53,14 @@ class LastGameListElement extends StatelessWidget {
             )),
           ]),
           game.status == "18"
+              // ignore: prefer_const_literals_to_create_immutables
               ? Row(children: [
-                  Expanded(
+                  const Expanded(
                       child: Align(
                     alignment: Alignment.topCenter,
                     child: Text(
                       "ANNULE",
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: Colors.red,
                           fontStyle: FontStyle.italic,
                           fontSize: 12),
@@ -73,7 +74,7 @@ class LastGameListElement extends StatelessWidget {
               Column(
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
+                    width: MediaQuery.of(context).size.width * 0.55,
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: getTextForHomeTeamName(game),
@@ -81,14 +82,7 @@ class LastGameListElement extends StatelessWidget {
                   )
                 ],
               ),
-              Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: getTextForHomeTeamScore(game),
-                  ),
-                ],
-              ),
+              Column(children: [Row(children: getTeamScoreZone(game, true))]),
             ],
           ),
           Row(
@@ -96,7 +90,7 @@ class LastGameListElement extends StatelessWidget {
               Column(
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
+                    width: MediaQuery.of(context).size.width * 0.55,
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: getTextForAwayTeamName(game),
@@ -106,10 +100,9 @@ class LastGameListElement extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: getTextForAwayTeamScore(game),
-                  ),
+                  Row(
+                    children: getTeamScoreZone(game, false),
+                  )
                 ],
               ),
             ],
@@ -136,6 +129,92 @@ class LastGameListElement extends StatelessWidget {
     }
 
     return Text("${game.awayTeamName}", style: style);
+  }
+
+  List<Widget> getTeamScoreZone(Game game, bool forHome) {
+    List<Widget> scoreZone = [];
+
+    if (game.status == "18") {
+      scoreZone.add(const Align(
+        alignment: Alignment.centerRight,
+        child: Text("-"),
+      ));
+    } else {
+      scoreZone.addAll([
+        SizedBox(
+          width: 20,
+          child: Align(
+              alignment: Alignment.centerRight,
+              child: forHome
+                  ? getTextForHomeTeamScore(game)
+                  : getTextForAwayTeamScore(game)),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(left: 5),
+        ),
+        CircleAvatar(
+          radius: 10,
+          backgroundColor: Color.fromARGB(255, 242, 240, 240),
+          foregroundColor: Colors.black,
+          child: Text(
+            forHome
+                ? "${game.detailedScore.homeFirstTierGoal}"
+                : "${game.detailedScore.awayFirstTierGoal}",
+            style: TextStyle(fontSize: 9),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(left: 5),
+        ),
+        CircleAvatar(
+          backgroundColor: Color.fromARGB(255, 242, 240, 240),
+          foregroundColor: Colors.black,
+          radius: 10,
+          child: Text(
+            forHome
+                ? "${game.detailedScore.homeSecondTierGoal}"
+                : "${game.detailedScore.awaySecondTierGoal}",
+            style: TextStyle(fontSize: 9),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(left: 5),
+        ),
+        CircleAvatar(
+          backgroundColor: Color.fromARGB(255, 242, 240, 240),
+          foregroundColor: Colors.black,
+          radius: 10,
+          child: Text(
+            forHome
+                ? "${game.detailedScore.homeThirdTierGoal}"
+                : "${game.detailedScore.awayThirdTierGoal}",
+            style: TextStyle(fontSize: 9),
+          ),
+        ),
+      ]);
+
+      if (game.decisionType == "2" ||
+          game.decisionType == "3" ||
+          game.decisionType == "4") {
+        scoreZone.addAll([
+          const Padding(
+            padding: EdgeInsets.only(left: 5),
+          ),
+          CircleAvatar(
+            radius: 10,
+            foregroundColor: Colors.black,
+            child: Text(
+              forHome
+                  ? "${game.detailedScore.homeExtraTimeGoal}"
+                  : "${game.detailedScore.awayExtraTimeGoal}",
+              style: TextStyle(fontSize: 9),
+            ),
+          ),
+        ]);
+      }
+    }
+
+    return scoreZone;
   }
 
   Text getTextForHomeTeamScore(Game game) {

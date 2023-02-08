@@ -15,17 +15,17 @@ class TodayGameBloc extends StatelessWidget {
 
     switch (todayGamesResult.games[0].status) {
       case "0":
-        return "Pas commencé";
+        return "${todayGamesResult.games[0].begin}";
       case "1":
-        return "1er tiers en cours";
+        return "1er tiers";
       case "2":
         return "Pause 1er tiers";
       case "3":
-        return "2ème tiers e5 cours";
+        return "2ème tiers";
       case "4":
         return "Pause 2ème tiers";
       case "5":
-        return "3ème tiers en cours";
+        return "3ème tiers";
       case "6":
         return "Fin 3ème tiers";
       case "9":
@@ -57,9 +57,10 @@ class TodayGameBloc extends StatelessWidget {
                 child: Text(
                   getMatchStatusLibelle(),
                   style: const TextStyle(
+                      backgroundColor: Colors.grey,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green),
+                      color: Colors.black),
                 ),
               )),
           todayGamesResult.games.isEmpty

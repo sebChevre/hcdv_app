@@ -25,36 +25,85 @@ class Result {
   final String group;
 }
 
+class DetailedScore {
+  int homeFirstTierGoal = 0;
+  int awayFirstTierGoal = 0;
+  int homeSecondTierGoal = 0;
+  int awaySecondTierGoal = 0;
+  int homeThirdTierGoal = 0;
+  int awayThirdTierGoal = 0;
+  int? homeExtraTimeGoal;
+  int? awayExtraTimeGoal;
+  String thirdResults;
+  String decisionType;
+  String status;
+
+  DetailedScore(this.thirdResults, this.decisionType, this.status) {
+    if (status != "18" && status != "0") {
+      List<String> periods = thirdResults.split(",");
+
+      homeFirstTierGoal = int.parse(periods[0].split(":")[0]);
+      awayFirstTierGoal = int.parse(periods[0].split(":")[1]);
+
+      homeSecondTierGoal = int.parse(periods[1].split(":")[0]);
+      awaySecondTierGoal = int.parse(periods[1].split(":")[1]);
+
+      homeThirdTierGoal = int.parse(periods[2].split(":")[0]);
+      awayThirdTierGoal = int.parse(periods[2].split(":")[1]);
+
+      if (decisionType == "2") {
+        homeExtraTimeGoal = int.parse(periods[3].split(":")[0]);
+        awayExtraTimeGoal =
+            int.parse(periods[3].split(":")[1].replaceAll("[+1]", ""));
+      }
+
+      if (decisionType == "3") {
+        homeExtraTimeGoal = int.parse(periods[3].split(":")[0]);
+        awayExtraTimeGoal =
+            int.parse(periods[3].split(":")[1].replaceAll("[p]", ""));
+      }
+
+      if (decisionType == "4") {
+        homeExtraTimeGoal = int.parse(periods[3].split(":")[0]);
+        awayExtraTimeGoal = int.parse(periods[3]
+            .split(":")[1]
+            .replaceAll("[+1", "")
+            .replaceAll(",p]", ""));
+      }
+    }
+  }
+}
+
 class Game {
-  Game({
-    this.group,
-    this.gameId,
-    this.guideNumber,
-    this.homeTeamId,
-    this.homeTeamName,
-    this.awayTeamId,
-    this.awayTeamName,
-    this.arena,
-    required this.date,
-    this.begin,
-    required this.beginDateTime,
-    this.end,
-    this.homeScore,
-    this.awayScore,
-    this.thirdsResults,
-    this.homePoints,
-    this.awayPoints,
-    this.overtime,
-    this.overtimes,
-    this.decisionType,
-    this.status,
-    this.statusSymbol,
-    this.spectators,
-    this.refereeName,
-    this.referee2Name,
-    this.xmlns,
-    required this.leagueId,
-  });
+  Game(
+      {this.group,
+      this.gameId,
+      this.guideNumber,
+      this.homeTeamId,
+      this.homeTeamName,
+      this.awayTeamId,
+      this.awayTeamName,
+      this.arena,
+      required this.date,
+      this.begin,
+      required this.beginDateTime,
+      this.end,
+      this.homeScore,
+      this.awayScore,
+      this.thirdsResults,
+      this.homePoints,
+      this.awayPoints,
+      this.overtime,
+      this.overtimes,
+      this.decisionType,
+      this.status,
+      this.statusSymbol,
+      this.spectators,
+      this.refereeName,
+      this.referee2Name,
+      this.xmlns,
+      required this.leagueId,
+      required this.detailedScore});
 
   String? group; //last, today, next
   String? gameId;
@@ -83,6 +132,7 @@ class Game {
   String? referee2Name;
   String? xmlns;
   String leagueId;
+  DetailedScore detailedScore;
 
   bool isHCDVHomeTeam(int leagueId) {
     switch (leagueId) {
@@ -146,7 +196,11 @@ class Game {
           spectators: xmlElement.findElements("Spectators").first.text,
           refereeName: xmlElement.findElements("RefereeName").first.text,
           referee2Name: xmlElement.findElements("Referee2Name").first.text,
-          leagueId: leagueId);
+          leagueId: leagueId,
+          detailedScore: DetailedScore(
+              xmlElement.findElements("ThirdsResults").first.text,
+              xmlElement.findElements("DecisionType").first.text,
+              xmlElement.findElements("Status").first.text));
 }
 
 class Parameter {
