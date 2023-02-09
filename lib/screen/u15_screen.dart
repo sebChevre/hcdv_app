@@ -3,22 +3,15 @@ import 'package:hcdv_app/widget/last_game_bloc.dart';
 import 'package:hcdv_app/widget/next_game_bloc.dart';
 import 'package:hcdv_app/widget/today_game_bloc.dart';
 
-import '../enum/app-enum.dart';
+import '../model/groupe-match.dart';
+import '../model/result.dart';
+import '../model/type-stats.dart';
 import '../services/u15-service.dart';
-import '../services/u17-service.dart';
-import '../services/u20-service.dart';
-import '../xml/xml_models.dart';
 
 class U15LiguePage extends StatelessWidget {
-  TypeStats typeStats;
+  final TypeStats typeStats;
 
-  U15LiguePage(this.typeStats, {super.key});
-
-  Result resultFor(List<Result> resultats, String group) {
-    return resultats.where((resultat) {
-      return resultat.group == group;
-    }).first;
-  }
+  const U15LiguePage(this.typeStats, {super.key});
 
   Future<List<Result>> _loadInitialU15Games() async {
     List<Result> resultats = await U15Service().loadU15Games();
@@ -55,7 +48,7 @@ class U15LiguePage extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.all(8),
                                 child: Text(
-                                  '${resultFor(snapshot.requireData, "today").parameter.phaseNameF}',
+                                  '${Result.resultFor(snapshot.requireData, GroupeMatch.TODAY).parameter.phaseNameF}',
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -67,13 +60,15 @@ class U15LiguePage extends StatelessWidget {
                           const Padding(
                             padding: EdgeInsets.all(8),
                           ),
-                          TodayGameBloc(
-                              resultFor(snapshot.requireData, "today")),
+                          TodayGameBloc(Result.resultFor(
+                              snapshot.requireData, GroupeMatch.TODAY)),
                           const Padding(padding: EdgeInsets.only(top: 20)),
-                          NextGameBloc(resultFor(snapshot.requireData, "next")),
+                          NextGameBloc(Result.resultFor(
+                              snapshot.requireData, GroupeMatch.NEXT)),
                           const Padding(padding: EdgeInsets.only(top: 20)),
                           /** MATCH JOUES */
-                          LastGameBloc(resultFor(snapshot.requireData, "last")),
+                          LastGameBloc(Result.resultFor(
+                              snapshot.requireData, GroupeMatch.LAST)),
                         ],
                       )
                     : Column(),

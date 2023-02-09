@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:hcdv_app/enum/app-enum.dart';
 import 'package:hcdv_app/widget/last_game_bloc.dart';
 import 'package:hcdv_app/widget/next_game_bloc.dart';
 import 'package:hcdv_app/widget/today_game_bloc.dart';
-
+import '../model/groupe-match.dart';
+import '../model/type-stats.dart';
 import '../services/l1-service.dart';
-import '../xml/xml_models.dart';
+import '../model/result.dart';
 
 class Ligue1PlayOffOutPage extends StatelessWidget {
-  TypeStats typeStats;
+  final TypeStats typeStats;
 
-  Ligue1PlayOffOutPage(this.typeStats, {super.key});
-
-  Result resultFor(List<Result> resultats, String group) {
-    return resultats.where((resultat) {
-      return resultat.group == group;
-    }).first;
-  }
+  const Ligue1PlayOffOutPage(this.typeStats, {super.key});
 
   // Chargement de la liste des matchs
   Future<List<Result>> _loadInitial1LGames() async {
@@ -48,14 +42,14 @@ class Ligue1PlayOffOutPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Column(children: [
-                            Padding(padding: EdgeInsets.all(8)),
+                            const Padding(padding: EdgeInsets.all(8)),
                             Card(
-                              color: Color.fromARGB(255, 206, 39, 27),
+                              color: const Color.fromARGB(255, 206, 39, 27),
                               child: Padding(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 child: Text(
-                                  '${resultFor(snapshot.requireData, "today").parameter.phaseNameF}',
-                                  style: TextStyle(
+                                  '${Result.resultFor(snapshot.requireData, GroupeMatch.TODAY).parameter.phaseNameF}',
+                                  style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
@@ -66,13 +60,15 @@ class Ligue1PlayOffOutPage extends StatelessWidget {
                           const Padding(
                             padding: EdgeInsets.all(8),
                           ),
-                          TodayGameBloc(
-                              resultFor(snapshot.requireData, "today")),
+                          TodayGameBloc(Result.resultFor(
+                              snapshot.requireData, GroupeMatch.TODAY)),
                           const Padding(padding: EdgeInsets.only(top: 20)),
-                          NextGameBloc(resultFor(snapshot.requireData, "next")),
+                          NextGameBloc(Result.resultFor(
+                              snapshot.requireData, GroupeMatch.NEXT)),
                           const Padding(padding: EdgeInsets.only(top: 20)),
                           /** MATCH JOUES */
-                          LastGameBloc(resultFor(snapshot.requireData, "last"))
+                          LastGameBloc(Result.resultFor(
+                              snapshot.requireData, GroupeMatch.LAST))
                         ],
                       )
                     : Column(),

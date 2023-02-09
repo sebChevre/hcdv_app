@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../model/game.dart';
 import '../util/date_util.dart';
-import '../xml/xml_models.dart';
 
 class TodayGameListElement extends StatelessWidget {
   final Game game;
@@ -86,7 +86,7 @@ class TodayGameListElement extends StatelessWidget {
   Text getTextForHomeTeamName(Game game) {
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
     //Si HCDV gras
-    if (game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 
@@ -96,7 +96,7 @@ class TodayGameListElement extends StatelessWidget {
   Text getTextForAwayTeamName(Game game) {
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
     //Si HCDV gras
-    if (!game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (!game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 
@@ -106,7 +106,7 @@ class TodayGameListElement extends StatelessWidget {
   Text getTextForHomeTeamScore(Game game) {
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
     //Si HCDV gras
-    if (game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 
@@ -116,7 +116,7 @@ class TodayGameListElement extends StatelessWidget {
   Text getTextForAwayTeamScore(Game game) {
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
     //Si HCDV gras
-    if (!game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (!game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 

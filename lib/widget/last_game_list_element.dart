@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../model/game.dart';
 import '../util/date_util.dart';
-import '../xml/xml_models.dart';
 
 class LastGameListElement extends StatelessWidget {
   final Game game;
@@ -14,7 +14,7 @@ class LastGameListElement extends StatelessWidget {
           side: BorderSide(color: Colors.grey, width: 4),
           borderRadius: BorderRadius.all(Radius.circular(10)));
     } else {
-      return game.isHCDVWinnerTeam(int.parse(game.leagueId))
+      return game.isHCDVWinnerTeam(game.homeTeamId)
           ? const RoundedRectangleBorder(
               side: BorderSide(color: Colors.green, width: 2),
               borderRadius: BorderRadius.all(Radius.circular(10)))
@@ -114,7 +114,7 @@ class LastGameListElement extends StatelessWidget {
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
 
     //Si HCDV gras
-    if (game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 
@@ -124,7 +124,7 @@ class LastGameListElement extends StatelessWidget {
   Text getTextForAwayTeamName(Game game) {
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
     //Si HCDV gras
-    if (!game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (!game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 
@@ -221,7 +221,7 @@ class LastGameListElement extends StatelessWidget {
     String text = game.status == "18" ? "-" : "${game.homeScore}";
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
     //Si HCDV gras
-    if (game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 
@@ -232,7 +232,7 @@ class LastGameListElement extends StatelessWidget {
     String text = game.status == "18" ? "-" : "${game.awayScore}";
     TextStyle style = const TextStyle(fontWeight: FontWeight.normal);
     //Si HCDV gras
-    if (!game.isHCDVHomeTeam(int.parse(game.leagueId))) {
+    if (!game.isHCDVHomeTeam(game.homeTeamId)) {
       style = const TextStyle(fontWeight: FontWeight.bold);
     }
 

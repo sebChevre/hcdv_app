@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hcdv_app/enum/app-enum.dart';
 import 'package:hcdv_app/screen/coupe_screen.dart';
 import 'package:hcdv_app/screen/ligue1_playoff_out_screen.dart';
 import 'package:hcdv_app/screen/ligue1_screen.dart';
@@ -14,6 +13,11 @@ import 'package:hcdv_app/screen/u17_screen.dart';
 import 'package:hcdv_app/screen/u20_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
+import 'enum/app-color.dart';
+import 'model/ligue.dart';
+import 'model/type-match.dart';
+import 'model/type-stats.dart';
 
 Future<void> main() async {
   initializeDateFormatting("fr_CH");
@@ -71,7 +75,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         /***** Main App Bar *****/
         appBar: AppBar(
             toolbarHeight: 80,
-            backgroundColor: AppColor.main_red.color,
+            backgroundColor: AppColor.main_red,
             title: Row(
               children: [
                 Column(
@@ -234,7 +238,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             /*** Cintainer vide pour choix coupe ***/
 
             BottomNavigationBar(
-              backgroundColor: AppColor.main_red.color,
+              backgroundColor: AppColor.main_red,
               selectedItemColor: Colors.white,
               currentIndex: _typeStats.index,
               onTap: (int index) {

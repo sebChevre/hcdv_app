@@ -1,7 +1,14 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hcdv_app/xml/xml_models.dart';
+import 'package:hcdv_app/model/groupe-match.dart';
+
 import 'package:xml/xml.dart' as xml;
+
+import '../model/classement.dart';
+import '../model/game.dart';
+import '../model/parameter.dart';
+import '../model/result.dart';
+import '../model/team.dart';
 
 class U15Service {
   static final String U15_LAST_GAME_URL = dotenv.get('U15_LAST_GAME_URL',
@@ -18,17 +25,17 @@ class U15Service {
 
   static final Map<String, String> HEADERS = {};
 
-  Future<Result> _loadMatchforGroupU15(String group) async {
+  Future<Result> _loadMatchforGroupU15(GroupeMatch groupe) async {
     String url = "";
 
-    switch (group) {
-      case "last":
+    switch (groupe) {
+      case GroupeMatch.LAST:
         url = U15_LAST_GAME_URL;
         break;
-      case "today":
+      case GroupeMatch.TODAY:
         url = U15_TODAY_GAME_URL;
         break;
-      case "next":
+      case GroupeMatch.NEXT:
         url = U15_NEXT_GAME_URL;
         break;
     }
@@ -49,19 +56,19 @@ class U15Service {
     List<Game> games = gamesNode
         .findElements("Game")
         .map((xmlElement) =>
-            Game.fromXmlElement(parameter.leagueId, group, xmlElement))
+            Game.fromXmlElement(parameter.leagueId, groupe, xmlElement))
         .toList();
 
-    return Result(parameter: parameter, games: games, group: group);
+    return Result(parameter: parameter, games: games, groupe: groupe);
   }
 
   Future<List<Result>> loadU15Games() async {
     List<Result> all = [];
 
     try {
-      all.add(await _loadMatchforGroupU15("last"));
-      all.add(await _loadMatchforGroupU15("today"));
-      all.add(await _loadMatchforGroupU15("next"));
+      all.add(await _loadMatchforGroupU15(GroupeMatch.LAST));
+      all.add(await _loadMatchforGroupU15(GroupeMatch.TODAY));
+      all.add(await _loadMatchforGroupU15(GroupeMatch.NEXT));
 
       return all;
     } catch (err) {

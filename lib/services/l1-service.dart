@@ -1,8 +1,15 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hcdv_app/enum/app-enum.dart';
-import 'package:hcdv_app/xml/xml_models.dart';
+import 'package:hcdv_app/model/groupe-match.dart';
+
 import 'package:xml/xml.dart' as xml;
+
+import '../model/classement.dart';
+import '../model/game.dart';
+import '../model/parameter.dart';
+import '../model/result.dart';
+import '../model/team.dart';
+import '../model/type-match.dart';
 
 class L1Service {
   static final String LIGUE1_LAST_GAME_URL =
@@ -37,17 +44,17 @@ class L1Service {
 
   static final Map<String, String> HEADERS = {};
 
-  Future<Result> _loadMatchforGroup1L(String group) async {
+  Future<Result> _loadMatchforGroup1L(GroupeMatch groupe) async {
     String url = "";
 
-    switch (group) {
-      case "last":
+    switch (groupe) {
+      case GroupeMatch.LAST:
         url = LIGUE1_LAST_GAME_URL;
         break;
-      case "today":
+      case GroupeMatch.TODAY:
         url = LIGUE1_TODAY_GAME_URL;
         break;
-      case "next":
+      case GroupeMatch.NEXT:
         url = LIGUE1_NEXT_GAME_URL;
         break;
     }
@@ -68,23 +75,23 @@ class L1Service {
     List<Game> games = gamesNode
         .findElements("Game")
         .map((xmlElement) =>
-            Game.fromXmlElement(parameter.leagueId, group, xmlElement))
+            Game.fromXmlElement(parameter.leagueId, groupe, xmlElement))
         .toList();
 
-    return Result(games: games, parameter: parameter, group: group);
+    return Result(games: games, parameter: parameter, groupe: groupe);
   }
 
-  Future<Result> _loadMatchforGroup1LPO(String group) async {
+  Future<Result> _loadMatchforGroup1LPO(GroupeMatch groupe) async {
     String url = "";
 
-    switch (group) {
-      case "last":
+    switch (groupe) {
+      case GroupeMatch.LAST:
         url = LIGUE1_PO_LAST_GAME_URL;
         break;
-      case "today":
+      case GroupeMatch.TODAY:
         url = LIGUE1_PO_TODAY_GAME_URL;
         break;
-      case "next":
+      case GroupeMatch.NEXT:
         url = LIGUE1_PO_NEXT_GAME_URL;
         break;
     }
@@ -105,10 +112,10 @@ class L1Service {
     List<Game> games = gamesNode
         .findElements("Game")
         .map((xmlElement) =>
-            Game.fromXmlElement(parameter.leagueId, group, xmlElement))
+            Game.fromXmlElement(parameter.leagueId, groupe, xmlElement))
         .toList();
 
-    return Result(games: games, parameter: parameter, group: group);
+    return Result(games: games, parameter: parameter, groupe: groupe);
   }
 
   Future<Classement> loadClassement(TypeMatch typeMatch) async {
@@ -165,9 +172,9 @@ class L1Service {
     List<Result> all = [];
 
     try {
-      all.add(await _loadMatchforGroup1L("last"));
-      all.add(await _loadMatchforGroup1L("today"));
-      all.add(await _loadMatchforGroup1L("next"));
+      all.add(await _loadMatchforGroup1L(GroupeMatch.LAST));
+      all.add(await _loadMatchforGroup1L(GroupeMatch.TODAY));
+      all.add(await _loadMatchforGroup1L(GroupeMatch.NEXT));
 
       return all;
     } catch (err) {
@@ -179,9 +186,9 @@ class L1Service {
     List<Result> all = [];
 
     try {
-      all.add(await _loadMatchforGroup1LPO("last"));
-      all.add(await _loadMatchforGroup1LPO("today"));
-      all.add(await _loadMatchforGroup1LPO("next"));
+      all.add(await _loadMatchforGroup1LPO(GroupeMatch.LAST));
+      all.add(await _loadMatchforGroup1LPO(GroupeMatch.TODAY));
+      all.add(await _loadMatchforGroup1LPO(GroupeMatch.NEXT));
 
       return all;
     } catch (err) {

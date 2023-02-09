@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../xml/xml_models.dart';
+import '../model/classement.dart';
 
 class FixedColumnDataTable extends StatelessWidget {
   final Classement classement;

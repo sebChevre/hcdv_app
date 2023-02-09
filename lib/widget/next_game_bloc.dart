@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hcdv_app/xml/xml_models.dart';
 
-import 'last_game_list_element.dart';
+import '../model/result.dart';
 import 'next_game_list_element.dart';
 
 class NextGameBloc extends StatelessWidget {

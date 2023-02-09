@@ -1,7 +1,7 @@
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:hcdv_app/widget/today_game_list_element.dart';
-import 'package:hcdv_app/xml/xml_models.dart';
+
+import '../model/result.dart';
 
 class TodayGameBloc extends StatelessWidget {
   Result todayGamesResult;
