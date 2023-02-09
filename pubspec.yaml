@@ -41,6 +41,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   intl: ^0.18.0
   flutter_cache_manager: ^3.3.0
+  git_info: ^1.1.2
 
 
 dev_dependencies:
@@ -63,6 +64,9 @@ flutter:
   assets:
     - .env
     - assets/
+    - .git/
+    - .git/refs/heads/
+    - .git/refs/heads/feature/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

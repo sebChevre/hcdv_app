@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hcdv_app/screen/app-infos.dart';
 import 'package:hcdv_app/screen/coupe_screen.dart';
 import 'package:hcdv_app/screen/ligue1_playoff_out_screen.dart';
 import 'package:hcdv_app/screen/ligue1_screen.dart';
@@ -104,6 +105,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 )
               ],
             ),
+            actions: [
+              PopupMenuButton(
+                onCanceled: () => print("cancel"),
+                onSelected: (value) {
+                  print("sel");
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AppInfosPage(),
+                    ),
+                  );
+                },
+                itemBuilder: (ctx) => [
+                  _buildPopupMenuItem('App Infos'),
+                ],
+              )
+            ],
             /*** Type Stats TabBar ***/
             bottom: TabBar(
               indicatorColor: Colors.black,
@@ -257,6 +274,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ],
         ),
       ),
+    );
+  }
+
+  PopupMenuItem _buildPopupMenuItem(String title) {
+    return PopupMenuItem(
+      value: "appInfos",
+      child: Text(title),
     );
   }
 

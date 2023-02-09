@@ -33,10 +33,10 @@ class U20Service {
         url = U20_LAST_GAME_URL;
         break;
       case GroupeMatch.NEXT:
-        url = U20_TODAY_GAME_URL;
+        url = U20_NEXT_GAME_URL;
         break;
       case GroupeMatch.TODAY:
-        url = U20_NEXT_GAME_URL;
+        url = U20_TODAY_GAME_URL;
         break;
     }
 
