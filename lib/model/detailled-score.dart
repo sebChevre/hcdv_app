@@ -12,7 +12,7 @@ class DetailedScore {
   String status;
 
   DetailedScore(this.thirdResults, this.decisionType, this.status) {
-    if (status != "18" && status != "0") {
+    if (status != "18" && status != "0" && status != "16" && status != "17") {
       List<String> periods = thirdResults.split(",");
 
       homeFirstTierGoal = int.parse(periods[0].split(":")[0]);
